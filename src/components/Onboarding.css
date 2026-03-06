@@ -8,6 +8,17 @@
   overflow: hidden;
 }
 
+/* Fuzzy Text hero — sits above the welcome card */
+.fuzzy-hero {
+  position: relative;
+  height: 120px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 .ob-bg {
   position: fixed;
   inset: 0;
@@ -275,6 +286,21 @@
   color: var(--danger);
   margin-top: 6px;
 }
+.ob-att-warn-ok {
+  font-size: 13px;
+  color: var(--warning);
+  margin-top: 6px;
+}
+.ob-att-fraction {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.input-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
 
 /* Error */
 .ob-error {
@@ -379,3 +405,104 @@
   .ob-two-col { grid-template-columns: 1fr; }
   .ob-title { font-size: 28px; }
 }
+
+/* ——— Wide card for timetable step ——— */
+.ob-card-wide {
+  max-width: 520px;
+}
+.ob-container {
+  max-width: 520px;
+}
+
+/* ——— Timetable manual entry ——— */
+.tt-days {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tt-day-row {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  transition: var(--transition);
+}
+.tt-day-row:hover {
+  border-color: var(--border-card);
+}
+
+.tt-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+.tt-day-row:has(.tt-subjects) .tt-day-header {
+  margin-bottom: 10px;
+}
+
+.tt-day-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  width: 36px;
+}
+
+.tt-day-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 100px;
+  padding: 4px 10px;
+}
+.tt-count-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  border-radius: 4px;
+}
+.tt-count-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+.tt-count-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+.tt-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 16px;
+  text-align: center;
+}
+
+.tt-subjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tt-subject-input {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.tt-empty-day {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+

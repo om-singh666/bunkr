@@ -157,13 +157,22 @@
   color: var(--success);
 }
 
-/* Projected */
-.dash-projected {
-  background: var(--bg-card);
+/* ——— Glass Cards ——— */
+.dash-glass-card {
+  background: rgba(15, 15, 15, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-card);
+}
+.dash-row-1-right {
   border-radius: var(--radius-lg);
   padding: 20px;
 }
+.dash-row-2 {
+  border-radius: var(--radius-xl);
+}
+
+/* Projected */
 .proj-header {
   display: flex;
   align-items: center;
@@ -184,7 +193,7 @@
   margin-bottom: 16px;
 }
 .proj-card {
-  background: var(--bg-secondary);
+  background: rgba(17, 17, 17, 0.4);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 12px;
@@ -241,13 +250,6 @@
 }
 
 /* ——— Day Section ——— */
-.dash-day-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-}
-
 .day-nav {
   display: flex;
   align-items: center;
@@ -351,7 +353,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: var(--bg-secondary);
+  background: rgba(17, 17, 17, 0.3);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -359,7 +361,7 @@
   transition: var(--transition);
   text-align: left;
 }
-.class-card:hover { background: var(--bg-card-hover); border-color: var(--border-card); }
+.class-card:hover { background: rgba(29, 29, 29, 0.7); border-color: var(--border-card); }
 .class-card.selected {
   background: rgba(76, 175, 80, 0.06);
   border-color: rgba(76, 175, 80, 0.25);
@@ -415,7 +417,6 @@
 }
 .meta-dot { color: var(--text-muted); }
 
-.class-status {}
 .status-badge {
   font-size: 11px;
   font-weight: 700;

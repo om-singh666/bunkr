@@ -1,155 +1,143 @@
-import { useState, useRef } from 'react'
-import { Upload, Key, BookOpen, ChevronRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react'
-import { parseTimetableImage } from '../utils/gemini'
+import { useState } from 'react'
+import { BookOpen, ChevronRight, AlertCircle, Plus, Minus, Calendar } from 'lucide-react'
+import FuzzyText from './FuzzyText'
+import SpotlightCard from './SpotlightCard'
 import './Onboarding.css'
 
-const STEPS = ['welcome', 'apikey', 'attendance', 'timetable']
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+const DAY_SHORT = { Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri' }
+
+const STEPS = ['welcome', 'attendance', 'timetable']
 
 export default function Onboarding({ onComplete }) {
   const [step, setStep] = useState('welcome')
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('bunkr_api_key') || '')
-  const [showKey, setShowKey] = useState(false)
   const [totalClasses, setTotalClasses] = useState('')
   const [presentClasses, setPresentClasses] = useState('')
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState(null)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [dragOver, setDragOver] = useState(false)
-  const fileRef = useRef()
 
-  const stepIndex = STEPS.indexOf(step)
+  // Timetable: { Monday: ['Math', 'Physics', 'DSA'], ... }
+  const [timetable, setTimetable] = useState(() => {
+    const init = {}
+    DAYS.forEach(day => { init[day] = ['', '', ''] }) // default 3 per day
+    return init
+  })
 
-  const handleApiKeyContinue = () => {
-    if (!apiKey.trim()) { setError('Please enter your Gemini API key'); return }
-    setError('')
-    localStorage.setItem('bunkr_api_key', apiKey.trim())
-    setStep('attendance')
-  }
+  // Attendance live validation
+  const totalVal = parseInt(totalClasses) || 0
+  const presentVal = parseInt(presentClasses)
+  const attendanceInputError =
+    totalClasses && presentClasses !== '' && !isNaN(presentVal)
+      ? presentVal < 0
+        ? 'Attended cannot be negative'
+        : presentVal > totalVal
+        ? `Attended (${presentVal}) cannot exceed total (${totalVal})`
+        : null
+      : null
+
+  const currentPct =
+    totalClasses && presentClasses !== '' && !isNaN(presentVal) &&
+    totalVal > 0 && presentVal >= 0 && presentVal <= totalVal
+      ? ((presentVal / totalVal) * 100).toFixed(1)
+      : null
 
   const handleAttendanceContinue = () => {
-    const total = parseInt(totalClasses)
-    const present = parseInt(presentClasses)
-    if (!total || total <= 0) { setError('Enter valid total classes'); return }
-    if (present < 0 || present > total) { setError('Present classes must be between 0 and total'); return }
+    const t = parseInt(totalClasses)
+    const p = parseInt(presentClasses)
+    if (!t || t <= 0) { setError('Enter total classes conducted'); return }
+    if (isNaN(p) || p < 0) { setError('Enter how many classes you attended'); return }
+    if (p > t) { setError(`Attended (${p}) cannot exceed total (${t})`); return }
     setError('')
     setStep('timetable')
   }
 
-  const handleFile = (file) => {
-    if (!file || !file.type.startsWith('image/')) {
-      setError('Please upload a valid image file')
-      return
-    }
-    setError('')
-    setImageFile(file)
-    const url = URL.createObjectURL(file)
-    setImagePreview(url)
+  // Timetable helpers
+  const setSubjectName = (day, idx, value) => {
+    setTimetable(prev => {
+      const updated = [...prev[day]]
+      updated[idx] = value
+      return { ...prev, [day]: updated }
+    })
   }
-
-  const handleDrop = (e) => {
-    e.preventDefault()
-    setDragOver(false)
-    const file = e.dataTransfer.files[0]
-    handleFile(file)
+  const addLecture = (day) => {
+    setTimetable(prev => ({ ...prev, [day]: [...prev[day], ''] }))
   }
-
-  const handleTimetableParse = async () => {
-    if (!imageFile) { setError('Please upload a timetable image'); return }
-    setError('')
-    setLoading(true)
-    try {
-      const timetableData = await parseTimetableImage(imageFile, apiKey.trim())
-      onComplete({
-        apiKey: apiKey.trim(),
-        totalClasses: parseInt(totalClasses),
-        presentClasses: parseInt(presentClasses),
-        timetable: timetableData,
-      })
-    } catch (err) {
-      console.error(err)
-      setError(err.message || 'Failed to parse timetable. Check your API key and image.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSkipTimetable = () => {
-    const defaultTimetable = {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      timetable: {
-        Monday: [
-          { subject: 'Lecture 1', time: '', room: '' },
-          { subject: 'Lecture 2', time: '', room: '' },
-          { subject: 'Lecture 3', time: '', room: '' },
-        ],
-        Tuesday: [
-          { subject: 'Lecture 1', time: '', room: '' },
-          { subject: 'Lecture 2', time: '', room: '' },
-        ],
-        Wednesday: [
-          { subject: 'Lecture 1', time: '', room: '' },
-          { subject: 'Lecture 2', time: '', room: '' },
-          { subject: 'Lecture 3', time: '', room: '' },
-        ],
-        Thursday: [
-          { subject: 'Lecture 1', time: '', room: '' },
-          { subject: 'Lecture 2', time: '', room: '' },
-        ],
-        Friday: [
-          { subject: 'Lecture 1', time: '', room: '' },
-          { subject: 'Lecture 2', time: '', room: '' },
-          { subject: 'Lecture 3', time: '', room: '' },
-        ],
-      },
-    }
-    onComplete({
-      apiKey: apiKey.trim(),
-      totalClasses: parseInt(totalClasses),
-      presentClasses: parseInt(presentClasses),
-      timetable: defaultTimetable,
+  const removeLecture = (day) => {
+    setTimetable(prev => {
+      if (prev[day].length <= 0) return prev
+      const updated = [...prev[day]]
+      updated.pop()
+      return { ...prev, [day]: updated }
     })
   }
 
-  // Calculate current attendance for preview
-  const currentPct = totalClasses && presentClasses !== ''
-    ? ((parseInt(presentClasses) / parseInt(totalClasses)) * 100).toFixed(1)
-    : null
+  const handleComplete = () => {
+    const hasAnyClass = DAYS.some(d => timetable[d].length > 0)
+    if (!hasAnyClass) { setError('Add at least 1 class to any day'); return }
+    setError('')
+
+    // Build the timetable structure expected by Dashboard
+    const days = DAYS.filter(d => timetable[d].length > 0)
+    const structured = {}
+    days.forEach(day => {
+      structured[day] = timetable[day].map((name, i) => ({
+        subject: name.trim() || `Lecture ${i + 1}`,
+        time: '',
+        room: '',
+      }))
+    })
+
+    onComplete({
+      totalClasses: parseInt(totalClasses),
+      presentClasses: parseInt(presentClasses),
+      timetable: { days, timetable: structured },
+    })
+  }
 
   return (
     <div className="onboarding">
-      {/* Animated background */}
-      <div className="ob-bg">
-        <div className="ob-glow ob-glow-1" />
-        <div className="ob-glow ob-glow-2" />
-      </div>
-
       <div className="ob-container">
-        {/* Logo / Brand */}
-        <div className={`ob-brand ${step !== 'welcome' ? 'ob-brand-sm' : ''}`}>
-          <div className="ob-logo">
-            <span className="ob-logo-b">B</span>
-          </div>
-          {step !== 'welcome' && (
+        {/* Brand — small header on steps 2+ */}
+        {step !== 'welcome' && (
+          <div className="ob-brand ob-brand-sm">
+            <div className="ob-logo">
+              <span className="ob-logo-b">B</span>
+            </div>
             <span className="ob-logo-name">BUNKR</span>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Step progress */}
+        {/* Progress dots */}
         {step !== 'welcome' && (
           <div className="ob-progress">
-            {['apikey', 'attendance', 'timetable'].map((s, i) => (
-              <div key={s} className={`ob-dot ${STEPS.indexOf(step) > i + 1 ? 'done' : ''} ${step === s ? 'active' : ''}`} />
+            {['attendance', 'timetable'].map((s, i) => (
+              <div
+                key={s}
+                className={`ob-dot ${STEPS.indexOf(step) > i + 1 ? 'done' : ''} ${step === s ? 'active' : ''}`}
+              />
             ))}
           </div>
         )}
 
         {/* ——— WELCOME ——— */}
         {step === 'welcome' && (
-          <div className="ob-card animate-in">
-            <h1 className="ob-title">
-              Welcome to <span className="text-red">BUNKR</span>
-            </h1>
+          <>
+            {/* Fuzzy Text hero — ABOVE the card */}
+            <div className="fuzzy-hero">
+              <FuzzyText
+                baseIntensity={0.08}
+                hoverIntensity={0.3}
+                enableHover={true}
+                color="#f83a3a"
+                fontSize={100}
+                fontWeight={900}
+                direction="horizontal"
+                fuzzRange={20}
+              >
+                BUNKR
+              </FuzzyText>
+            </div>
+
+            <SpotlightCard className="ob-card animate-in" spotlightColor="rgba(248, 58, 58, 0.15)">
             <p className="ob-subtitle">
               The smart attendance tracker built for engineers who know when to grind — and when to bunk.
             </p>
@@ -162,10 +150,10 @@ export default function Onboarding({ onComplete }) {
                 </div>
               </div>
               <div className="ob-feature">
-                <div className="ob-feature-icon">🤖</div>
+                <div className="ob-feature-icon">📅</div>
                 <div>
-                  <div className="ob-feature-title">AI Timetable Parsing</div>
-                  <div className="ob-feature-desc">Upload your college timetable image — we extract everything</div>
+                  <div className="ob-feature-title">Day-wise Planner</div>
+                  <div className="ob-feature-desc">Set your Mon–Fri schedule in 30 seconds</div>
                 </div>
               </div>
               <div className="ob-feature">
@@ -176,58 +164,16 @@ export default function Onboarding({ onComplete }) {
                 </div>
               </div>
             </div>
-            <button className="btn btn-primary btn-full btn-lg" onClick={() => setStep('apikey')}>
+            <button className="btn btn-primary btn-full btn-lg" onClick={() => setStep('attendance')}>
               Get Started <ChevronRight size={18} />
             </button>
-          </div>
-        )}
-
-        {/* ——— API KEY ——— */}
-        {step === 'apikey' && (
-          <div className="ob-card animate-in">
-            <div className="ob-step-icon">
-              <Key size={22} />
-            </div>
-            <h2 className="ob-card-title">Gemini API Key</h2>
-            <p className="ob-card-desc">
-              We use Google Gemini to intelligently parse your timetable from an image. Your key is stored only in your browser — never on any server.
-            </p>
-            <div className="input-group" style={{ marginBottom: 16 }}>
-              <label className="input-label">API Key</label>
-              <div className="input-wrap">
-                <input
-                  id="api-key-input"
-                  type={showKey ? 'text' : 'password'}
-                  className="input-field"
-                  placeholder="AIza..."
-                  value={apiKey}
-                  onChange={e => { setApiKey(e.target.value); setError('') }}
-                  onKeyDown={e => e.key === 'Enter' && handleApiKeyContinue()}
-                />
-                <button className="input-toggle" onClick={() => setShowKey(!showKey)} tabIndex={-1}>
-                  {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
-            <a
-              href="https://aistudio.google.com/app/apikey"
-              target="_blank"
-              rel="noreferrer"
-              className="ob-link"
-            >
-              Get a free key from Google AI Studio →
-            </a>
-            {error && <div className="ob-error"><AlertCircle size={14} />{error}</div>}
-            <div className="ob-actions">
-              <button className="btn btn-ghost" onClick={() => setStep('welcome')}>Back</button>
-              <button className="btn btn-primary" onClick={handleApiKeyContinue}>Continue <ChevronRight size={16} /></button>
-            </div>
-          </div>
+            </SpotlightCard>
+          </>
         )}
 
         {/* ——— ATTENDANCE ——— */}
         {step === 'attendance' && (
-          <div className="ob-card animate-in">
+          <SpotlightCard className="ob-card animate-in" spotlightColor="rgba(248, 58, 58, 0.12)">
             <div className="ob-step-icon">
               <BookOpen size={22} />
             </div>
@@ -237,116 +183,127 @@ export default function Onboarding({ onComplete }) {
             </p>
             <div className="ob-two-col">
               <div className="input-group">
-                <label className="input-label">Total Classes Held</label>
+                <label className="input-label">Total Classes Conducted</label>
                 <input
                   id="total-classes-input"
                   type="number"
                   className="input-field"
-                  placeholder="e.g. 120"
+                  placeholder="e.g. 151"
                   min="1"
                   value={totalClasses}
                   onChange={e => { setTotalClasses(e.target.value); setError('') }}
                 />
+                <span className="input-hint">All classes held so far</span>
               </div>
               <div className="input-group">
-                <label className="input-label">Classes Attended</label>
+                <label className="input-label">Classes You Attended</label>
                 <input
                   id="attended-classes-input"
                   type="number"
                   className="input-field"
-                  placeholder="e.g. 95"
+                  placeholder="e.g. 120"
                   min="0"
                   value={presentClasses}
                   onChange={e => { setPresentClasses(e.target.value); setError('') }}
                 />
+                <span className="input-hint">Must be ≤ total</span>
               </div>
             </div>
-            {currentPct && (
+
+            {attendanceInputError && (
+              <div className="ob-error"><AlertCircle size={14} />{attendanceInputError}</div>
+            )}
+            {currentPct && !attendanceInputError && (
               <div className="ob-attendance-preview">
-                <div className="ob-att-label">Current Attendance</div>
+                <div className="ob-att-label">Your Current Attendance</div>
                 <div className={`ob-att-value ${parseFloat(currentPct) < 75 ? 'danger' : parseFloat(currentPct) < 80 ? 'warning' : 'good'}`}>
                   {currentPct}%
                 </div>
+                <div className="ob-att-fraction">{presentVal} out of {totalVal} classes</div>
                 {parseFloat(currentPct) < 75 && (
                   <div className="ob-att-warn">⚠️ Below 75% — you're in danger zone!</div>
                 )}
+                {parseFloat(currentPct) >= 75 && parseFloat(currentPct) < 80 && (
+                  <div className="ob-att-warn-ok">🟡 Borderline — bunk carefully</div>
+                )}
               </div>
             )}
-            {error && <div className="ob-error"><AlertCircle size={14} />{error}</div>}
+            {error && !attendanceInputError && <div className="ob-error"><AlertCircle size={14} />{error}</div>}
             <div className="ob-actions">
-              <button className="btn btn-ghost" onClick={() => setStep('apikey')}>Back</button>
-              <button className="btn btn-primary" onClick={handleAttendanceContinue}>Continue <ChevronRight size={16} /></button>
+              <button className="btn btn-ghost" onClick={() => setStep('welcome')}>Back</button>
+              <button className="btn btn-primary" onClick={handleAttendanceContinue}>
+                Continue <ChevronRight size={16} />
+              </button>
             </div>
-          </div>
+          </SpotlightCard>
         )}
 
         {/* ——— TIMETABLE ——— */}
         {step === 'timetable' && (
-          <div className="ob-card animate-in">
+          <SpotlightCard className="ob-card animate-in ob-card-wide" spotlightColor="rgba(248, 58, 58, 0.12)">
             <div className="ob-step-icon">
-              <Upload size={22} />
+              <Calendar size={22} />
             </div>
-            <h2 className="ob-card-title">Upload Timetable</h2>
+            <h2 className="ob-card-title">Set Your Timetable</h2>
             <p className="ob-card-desc">
-              Upload a screenshot or photo of your college timetable. Gemini AI will extract your schedule automatically.
+              Enter your classes for each day. You can name them or leave blank — we'll auto-label them.
             </p>
 
-            <div
-              className={`ob-dropzone ${dragOver ? 'drag-over' : ''} ${imagePreview ? 'has-image' : ''}`}
-              onClick={() => fileRef.current?.click()}
-              onDragOver={e => { e.preventDefault(); setDragOver(true) }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-            >
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={e => handleFile(e.target.files[0])}
-                id="timetable-upload"
-              />
-              {imagePreview ? (
-                <div className="ob-preview">
-                  <img src={imagePreview} alt="Timetable preview" />
-                  <div className="ob-preview-overlay">
-                    <span>Click to change</span>
+            <div className="tt-days">
+              {DAYS.map(day => (
+                <div key={day} className="tt-day-row">
+                  <div className="tt-day-header">
+                    <span className="tt-day-name">{DAY_SHORT[day]}</span>
+                    <div className="tt-day-controls">
+                      <button
+                        className="tt-count-btn"
+                        onClick={() => removeLecture(day)}
+                        disabled={timetable[day].length === 0}
+                        title="Remove a lecture"
+                      >
+                        <Minus size={13} />
+                      </button>
+                      <span className="tt-count">{timetable[day].length}</span>
+                      <button
+                        className="tt-count-btn"
+                        onClick={() => addLecture(day)}
+                        disabled={timetable[day].length >= 10}
+                        title="Add a lecture"
+                      >
+                        <Plus size={13} />
+                      </button>
+                    </div>
                   </div>
+                  {timetable[day].length > 0 && (
+                    <div className="tt-subjects">
+                      {timetable[day].map((name, i) => (
+                        <input
+                          key={i}
+                          type="text"
+                          className="input-field tt-subject-input"
+                          placeholder={`Lecture ${i + 1}`}
+                          value={name}
+                          onChange={e => setSubjectName(day, i, e.target.value)}
+                          maxLength={30}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  {timetable[day].length === 0 && (
+                    <div className="tt-empty-day">No class — holiday / free day</div>
+                  )}
                 </div>
-              ) : (
-                <div className="ob-drop-content">
-                  <div className="ob-drop-icon">
-                    <Upload size={28} />
-                  </div>
-                  <div className="ob-drop-title">Drop your timetable here</div>
-                  <div className="ob-drop-desc">or click to browse · PNG, JPG, WEBP</div>
-                </div>
-              )}
+              ))}
             </div>
 
             {error && <div className="ob-error"><AlertCircle size={14} />{error}</div>}
-
             <div className="ob-actions">
               <button className="btn btn-ghost" onClick={() => setStep('attendance')}>Back</button>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn btn-secondary btn-sm" onClick={handleSkipTimetable} disabled={loading}>
-                  Skip →
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleTimetableParse}
-                  disabled={loading || !imageFile}
-                  id="parse-timetable-btn"
-                >
-                  {loading ? (
-                    <><div className="spinner" />&nbsp;Analyzing...</>
-                  ) : (
-                    <>Analyze & Start <ChevronRight size={16} /></>
-                  )}
-                </button>
-              </div>
+              <button className="btn btn-primary" onClick={handleComplete} id="finish-setup-btn">
+                Start Tracking <ChevronRight size={16} />
+              </button>
             </div>
-          </div>
+          </SpotlightCard>
         )}
       </div>
     </div>

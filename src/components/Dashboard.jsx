@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import {
-  RotateCcw, ChevronLeft, ChevronRight, CheckSquare,
-  Square, AlertTriangle, TrendingUp, TrendingDown,
-  BookOpen, Settings, X, Check
-} from 'lucide-react'
+import { Check, X, Edit2, RotateCcw, AlertTriangle, ShieldCheck, Calendar, ChevronLeft, ChevronRight, LogOut, Square, CheckSquare, BookOpen } from 'lucide-react'
+import SpotlightCard from './SpotlightCard'
 import './Dashboard.css'
 
 const DAY_SHORT = { Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun' }
@@ -65,6 +62,7 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
   const currentPct = totalClasses > 0 ? (presentClasses / totalClasses) * 100 : 0
   const bunksAllowed = calcBunksAllowed(presentClasses, totalClasses)
   const classesNeeded = Math.max(0, Math.ceil(0.75 * totalClasses - presentClasses))
+  const currentDayShort = DAY_SHORT[activeDay] || activeDay.slice(0, 3)
 
   const navigateDay = (dir) => {
     setSlideDir(dir === 1 ? 'right' : 'left')
@@ -107,9 +105,6 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
 
   return (
     <div className="dashboard">
-      {/* Sidebar glow */}
-      <div className="dash-glow" />
-
       {/* Header */}
       <header className="dash-header">
         <div className="dash-header-inner">
@@ -119,7 +114,7 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
           </div>
           <div className="dash-header-actions">
             <button className="btn btn-ghost btn-sm" onClick={() => setShowEdit(true)} id="edit-attendance-btn">
-              <Settings size={14} /> Update
+              <Edit2 size={14} /> Update
             </button>
             <button className="btn btn-ghost btn-sm" onClick={onReset}>
               <RotateCcw size={14} /> Reset
@@ -153,7 +148,7 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
               )}
               {currentPct >= 75 && (
                 <div className="dash-alert success">
-                  <Check size={14} />
+                  <ShieldCheck size={14} />
                   You can bunk up to <strong>{bunksAllowed}</strong> more class{bunksAllowed !== 1 ? 'es' : ''}
                 </div>
               )}
@@ -161,10 +156,10 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
           </div>
 
           {/* Projected for today */}
-          <div className="dash-projected">
+          <SpotlightCard className="dash-glass-card dash-row-1-right" spotlightColor="rgba(248, 58, 58, 0.12)">
             <div className="proj-header">
-              <span className="proj-title">After Today</span>
-              <span className="badge badge-red">{activeDay}</span>
+              <span className="proj-title">AFTER TODAY</span>
+              <span className="proj-day-badge">{currentDayShort}</span>
             </div>
             <div className="proj-grid">
               <div className="proj-card">
@@ -180,34 +175,12 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
               <div className="proj-card">
                 <div className="proj-card-label">Delta</div>
                 <div className={`proj-card-value ${projectedPct >= currentPct ? 'up' : 'down'}`}>
-                  {projectedPct >= currentPct ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+                  {projectedPct >= currentPct ? <Calendar size={18} /> : <LogOut size={18} />}
                   {Math.abs(projectedPct - currentPct).toFixed(1)}%
                 </div>
               </div>
             </div>
 
-            {/* Progress bar */}
-            <div className="proj-bars">
-              <div className="proj-bar-row">
-                <span>Current</span>
-                <div className="progress-bar-track" style={{ flex: 1, margin: '0 10px' }}>
-                  <div className="progress-bar-fill" style={{ width: `${Math.min(100, currentPct)}%`, background: pctColor(currentPct) }} />
-                </div>
-                <span>{currentPct.toFixed(1)}%</span>
-              </div>
-              <div className="proj-bar-row">
-                <span>Projected</span>
-                <div className="progress-bar-track" style={{ flex: 1, margin: '0 10px' }}>
-                  <div className="progress-bar-fill" style={{ width: `${Math.min(100, projectedPct)}%`, background: pctColor(projectedPct), transition: 'width 0.4s ease' }} />
-                </div>
-                <span>{projectedPct.toFixed(1)}%</span>
-              </div>
-              {/* 75% marker */}
-              <div className="proj-threshold-label">
-                <span>75% min</span>
-                <div className="proj-threshold-line" />
-              </div>
-            </div>
 
             {projectedPct < 75 && (
               <div className="dash-alert danger" style={{ marginTop: 12 }}>
@@ -215,11 +188,11 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
                 Attending this selection drops you below 75%!
               </div>
             )}
-          </div>
+          </SpotlightCard>
         </section>
 
         {/* ——— DAY SELECTOR ——— */}
-        <section className="dash-day-section">
+        <SpotlightCard className="dash-glass-card dash-row-2" spotlightColor="rgba(248, 58, 58, 0.08)">
           <div className="day-nav">
             <button
               className="btn btn-ghost btn-sm day-nav-btn"
@@ -316,7 +289,7 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
               )
             })}
           </div>
-        </section>
+        </SpotlightCard>
       </div>
 
       {/* ——— EDIT MODAL ——— */}

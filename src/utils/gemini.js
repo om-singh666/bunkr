@@ -60,7 +60,22 @@ Analyze the image carefully and return the JSON now:`
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}))
-    throw new Error(err?.error?.message || `API error: ${response.status}`)
+    const msg = err?.error?.message || ''
+
+    // Quota / rate limit errors
+    if (response.status === 429 || msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('rate')) {
+      throw new Error(
+        '⚠️ Gemini free tier quota exceeded. Options:\n' +
+        '1. Wait ~1 minute and try again\n' +
+        '2. Use the "Skip →" button below to enter your timetable manually\n' +
+        '3. Enable billing at https://ai.dev/rate-limit to get higher limits'
+      )
+    }
+    // Invalid API key
+    if (response.status === 400 || response.status === 403) {
+      throw new Error('Invalid or missing API key. Please go back and re-enter your Gemini API key.')
+    }
+    throw new Error(`API error ${response.status}: ${msg || 'Unknown error'}`)
   }
 
   const data = await response.json()
