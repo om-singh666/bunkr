@@ -1,8 +1,9 @@
 # 🏫 BUNKR — Smart Attendance Tracker
 
-The smart attendance tracker built for engineers who know when to grind — and when to bunk. Keep track of your college attendance seamlessly without the fear of falling under the 75% threshold. 
+The smart attendance tracker built for engineers who know when to grind — and when to bunk. Track your college attendance seamlessly without the fear of falling below the 75% threshold.
 
-**Built to solve the ultimate question: *"AGR 2 CLASS CHORO TOH KITNI ATTENDACNE KAM HOGI?"***
+**Built to solve the ultimate question:**
+*"If I skip 2 classes today, what will my attendance be?"*
 
 🌐 **Live Site:** https://om-singh666.github.io/bunkr/
 
