@@ -28,6 +28,20 @@ As an engineering student, managing attendance is a strategic game. You need to 
 - **Vanilla CSS** for the custom styling and glassmorphism effects
 - **Lucide Icons**
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="public/screenshot-onboarding.png" alt="BUNKR Onboarding" width="800"/>
+  <br>
+  <em>Interactive Onboarding Flow with Glowing Particles</em>
+</p>
+
+<p align="center">
+  <img src="public/screenshot-dashboard.png" alt="BUNKR Dashboard" width="800"/>
+  <br>
+  <em>Main Dashboard with Real-time Calculations and Translucent Cards</em>
+</p>
+
 ## 💻 How to Use
 
 1. Enter your current Total Classes Conducted and Classes Attended.
