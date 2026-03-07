@@ -40,6 +40,11 @@
   align-items: center;
   gap: 10px;
 }
+.dash-titles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .dash-logo {
   width: 32px;
   height: 32px;

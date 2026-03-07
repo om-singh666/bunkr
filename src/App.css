@@ -17,19 +17,22 @@
 }
 
 .bunkr-footer-inline {
-  font-size: 12px;
-  color: var(--text-muted, #9ca3af);
+  display: block;
+  font-size: 11px;
+  color: #d1d5db;
   font-weight: 500;
-  letter-spacing: 0.02em;
-  opacity: 0.8;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
   margin-top: -2px;
+  text-align: center;
+  width: 100%;
 }
 
 .bunkr-footer a,
 .bunkr-footer-inline a {
-  color: var(--text-secondary, #e5e7eb);
+  color: #ffffff;
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 800;
   transition: all 0.2s ease;
 }
 
