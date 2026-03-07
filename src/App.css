@@ -1,3 +1,44 @@
 .app {
   min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.bunkr-footer {
+  margin-top: auto;
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted, #9ca3af);
+  z-index: 10;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.bunkr-footer a {
+  color: var(--text-secondary, #e5e7eb);
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.bunkr-footer a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.footer-heart {
+  color: #ff4d4d;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  5% { transform: scale(1.15); }
+  10% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  20% { transform: scale(1); }
+  100% { transform: scale(1); }
 }

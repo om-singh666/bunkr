@@ -76,6 +76,9 @@ function App() {
           onUpdateAttendance={handleUpdateAttendance}
         />
       )}
+      <div className="bunkr-footer">
+        made with <span className="footer-heart">❤️</span> by <a href="https://github.com/om-singh666" target="_blank" rel="noopener noreferrer">om singh</a>
+      </div>
     </div>
   )
 }
