@@ -110,7 +110,12 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
         <div className="dash-header-inner">
           <div className="dash-brand">
             <div className="dash-logo">B</div>
-            <span className="dash-brand-name">BUNKR</span>
+            <div className="dash-titles">
+              <span className="dash-brand-name">BUNKR</span>
+              <div className="bunkr-footer-inline">
+                made with <span className="footer-heart">❤️</span> by <a href="https://github.com/om-singh666" target="_blank" rel="noopener noreferrer">om singh</a>
+              </div>
+            </div>
           </div>
           <div className="dash-header-actions">
             <button className="btn btn-ghost btn-sm" onClick={() => setShowEdit(true)} id="edit-attendance-btn">

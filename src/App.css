@@ -16,14 +16,25 @@
   letter-spacing: 0.02em;
 }
 
-.bunkr-footer a {
+.bunkr-footer-inline {
+  font-size: 12px;
+  color: var(--text-muted, #9ca3af);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+  margin-top: -2px;
+}
+
+.bunkr-footer a,
+.bunkr-footer-inline a {
   color: var(--text-secondary, #e5e7eb);
   text-decoration: none;
   font-weight: 700;
   transition: all 0.2s ease;
 }
 
-.bunkr-footer a:hover {
+.bunkr-footer a:hover,
+.bunkr-footer-inline a:hover {
   color: #ffffff;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }

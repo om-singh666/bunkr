@@ -135,6 +135,9 @@ export default function Onboarding({ onComplete }) {
               >
                 BUNKR
               </FuzzyText>
+              <div className="bunkr-footer-inline onboarding-footer">
+                made with <span className="footer-heart">❤️</span> by <a href="https://github.com/om-singh666" target="_blank" rel="noopener noreferrer">om singh</a>
+              </div>
             </div>
 
             <SpotlightCard className="ob-card animate-in" spotlightColor="rgba(248, 58, 58, 0.15)">
