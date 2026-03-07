@@ -164,8 +164,8 @@
 .text-red { color: var(--accent-red-bright); }
 
 .ob-subtitle {
-  font-size: 15px;
-  color: var(--text-secondary);
+  font-size: 16px;
+  color: #e5e7eb;
   line-height: 1.6;
 }
 
@@ -191,8 +191,8 @@
 .ob-feature {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  padding: 14px;
+  gap: 16px;
+  padding: 18px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -203,20 +203,22 @@
   background: var(--bg-card-hover);
 }
 .ob-feature-icon {
-  font-size: 22px;
+  font-size: 24px;
   flex-shrink: 0;
   line-height: 1;
   margin-top: 2px;
 }
 .ob-feature-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 2px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+  letter-spacing: 0.01em;
 }
 .ob-feature-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: #9ca3af;
+  line-height: 1.5;
 }
 
 /* Input wrap */
