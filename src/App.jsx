@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Onboarding from './components/Onboarding'
 import Dashboard from './components/Dashboard'
-import DotGrid from './components/DotGrid'
+import Galaxy from './components/Galaxy'
 import './App.css'
 
 const STORAGE_KEY = 'bunkr_data_v1'
@@ -51,17 +51,20 @@ function App() {
 
   return (
     <div className="app noise-bg">
-      <div className="dot-grid-container">
-        <DotGrid
-          dotSize={5}
-          gap={15}
-          baseColor="#d60000"
-          activeColor="#5227FF"
-          proximity={120}
-          shockRadius={250}
-          shockStrength={5}
-          resistance={750}
-          returnDuration={1.5}
+      <div style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}>
+        <Galaxy 
+          mouseRepulsion
+          mouseInteraction
+          density={1}
+          glowIntensity={0.3}
+          saturation={0}
+          hueShift={140}
+          twinkleIntensity={0.3}
+          rotationSpeed={0.1}
+          repulsionStrength={2}
+          autoCenterRepulsion={0}
+          starSpeed={0.5}
+          speed={1}
         />
       </div>
       {!userData ? (
