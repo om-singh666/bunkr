@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Onboarding from './components/Onboarding'
 import Dashboard from './components/Dashboard'
-import Particles from './components/Particles'
+import Galaxy from './components/Galaxy'
 import './App.css'
 
 const STORAGE_KEY = 'bunkr_data_v1'
@@ -52,17 +52,19 @@ function App() {
   return (
     <div className="app noise-bg">
       <div style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}>
-        <Particles
-          particleColors={["#ffffff", "#ff4d4d", "#b80000"]}
-          particleCount={250}
-          particleSpread={12}
-          speed={0.15}
-          particleBaseSize={120}
-          moveParticlesOnHover={true}
-          alphaParticles={true}
-          disableRotation={false}
-          sizeRandomness={1.5}
-          pixelRatio={1}
+        <Galaxy 
+          mouseRepulsion
+          mouseInteraction
+          density={1}
+          glowIntensity={0.3}
+          saturation={0}
+          hueShift={140}
+          twinkleIntensity={0.3}
+          rotationSpeed={0.1}
+          repulsionStrength={2}
+          autoCenterRepulsion={0}
+          starSpeed={0.5}
+          speed={1}
         />
       </div>
       {!userData ? (
