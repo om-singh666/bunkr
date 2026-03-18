@@ -137,7 +137,7 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
               <AttendanceRing pct={currentPct} color={pctColor(currentPct)} size={140} />
               <div className="stat-ring-center">
                 <div className="stat-ring-value" style={{ color: pctColor(currentPct) }}>
-                  {currentPct.toFixed(1)}%
+                  {(Math.floor(currentPct * 100) / 100).toFixed(2)}%
                 </div>
                 <div className="stat-ring-label">Current</div>
               </div>
@@ -170,7 +170,7 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
               <div className="proj-card">
                 <div className="proj-card-label">Projected %</div>
                 <div className="proj-card-value" style={{ color: pctColor(projectedPct) }}>
-                  {projectedPct.toFixed(1)}%
+                  {(Math.floor(projectedPct * 100) / 100).toFixed(2)}%
                 </div>
               </div>
               <div className="proj-card">
@@ -181,7 +181,7 @@ export default function Dashboard({ userData, onReset, onUpdateAttendance }) {
                 <div className="proj-card-label">Delta</div>
                 <div className={`proj-card-value ${projectedPct >= currentPct ? 'up' : 'down'}`}>
                   {projectedPct >= currentPct ? <Calendar size={18} /> : <LogOut size={18} />}
-                  {Math.abs(projectedPct - currentPct).toFixed(1)}%
+                  {(Math.floor(Math.abs(projectedPct - currentPct) * 100) / 100).toFixed(2)}%
                 </div>
               </div>
             </div>

@@ -37,7 +37,7 @@ export default function Onboarding({ onComplete }) {
   const currentPct =
     totalClasses && presentClasses !== '' && !isNaN(presentVal) &&
     totalVal > 0 && presentVal >= 0 && presentVal <= totalVal
-      ? ((presentVal / totalVal) * 100).toFixed(1)
+      ? (Math.floor((presentVal / totalVal) * 10000) / 100).toFixed(2)
       : null
 
   const handleAttendanceContinue = () => {
