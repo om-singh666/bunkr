@@ -1,4 +1,4 @@
-# 🏫 BUNKR — Smart Attendance Tracker
+# 🏫 BUNKR — Smart Attendance Trackerr
 
 The smart attendance tracker built for engineers who know when to grind — and when to bunk. Track your college attendance seamlessly without the fear of falling below the 75% threshold.
 
